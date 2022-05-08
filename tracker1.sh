@@ -17,34 +17,35 @@ function createDB(){
 function getSource(){
 	curl -o $output $website
 	}
+
 #sed -n '/Daily - Administered/,/Total - Administered/p' testing.txt | sed -n '/+/,/</p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta'#
 
 function getTAdministered(){
-	sed -n '/Total - Administered/,/Daily - 1st Dose/p' testing.txt | sed -n '/,/,/</p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Total - Administered/,/Daily - 1st Dose/p' $output | sed -n '/,/,/</p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 }
 
 function getTAt_Least1Dose(){
-	sed -n '/Total - At Least 1 Dose/,/Daily - 2nd Dose/p' testing.txt | sed -n '/,/,/</p' | cut -d 'N' -f1 | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Total - At Least 1 Dose/,/Daily - 2nd Dose/p' $output | sed -n '/,/,/</p' | cut -d 'N' -f1 | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 }
 
 function getT2Doses(){
-	sed -n '/Total - 2 Doses/,/Daily - Booster/p' testing.txt | sed -n '/,/,/</p' | cut -d 'N' -f1 | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Total - 2 Doses/,/Daily - Booster/p' $output | sed -n '/,/,/</p' | cut -d 'N' -f1 | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 }
 
 function getTBoosters(){
-	sed -n '/Total - Booster/,/Total Population/p' testing.txt | sed -n '/,/,/</p' | cut -d '<' -f1  | cut -d 'T' -f1 |  sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Total - Booster/,/Total Population/p' $output | sed -n '/,/,/</p' | cut -d '<' -f1  | cut -d 'T' -f1 |  sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 }
 
 function getTLocalCases(){
-	sed -n '/Local Cases/,/Imported Cases/p' testing.txt | sed -n '/><span>/,/,/p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Local Cases/,/Imported Cases/p' $output | sed -n '/><span>/,/,/p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 }
 
 function getTImportedCases(){
-	sed -n '/Imported Cases/,/Active Cases/p' testing.txt | sed -n '/><span>/,/,/p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Imported Cases/,/Active Cases/p' $output | sed -n '/><span>/,/,/p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 	}
 
 function getTActiveCases(){
-	sed -n '/ICUs/,/Local Cases/p' testing.txt | sed -n '/Active Cases/,/,/p' | cut -d '<' -f1 | cut -d 'A' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/ICUs/,/Local Cases/p' $output | sed -n '/Active Cases/,/,/p' | cut -d '<' -f1 | cut -d 'A' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 	}
 
 function getDate(){
@@ -52,16 +53,17 @@ function getDate(){
 }
 
 function getRecovered(){
-	sed -n '/Recovered/,/Deaths/p' testing.txt | cut -d '<' -f1 | cut -d 'R' -f1 | cut -d '+' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Recovered/,/Deaths/p' $output | cut -d '<' -f1 | cut -d 'R' -f1 | cut -d '+' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 	}
 
 function getDeathIncludingBID(){
-	sed -n '/Deaths (including BID)/,/Brought in Dead/p' testing.txt | cut -d '<' -f1 | cut -d 'D' -f1 | cut -d 'B' -f1 | cut -d '+' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Deaths (including BID)/,/Brought in Dead/p' $output | cut -d '<' -f1 | cut -d 'D' -f1 | cut -d 'B' -f1 | cut -d '+' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 	}
 
 function getBroughtInDead(){
-	sed -n '/Brought in Dead/,/COVID-19 patients/p' testing.txt | cut -d 'B' -f1 | cut -d '<' -f1 | cut -d 'C' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
+	sed -n '/Brought in Dead/,/COVID-19 patients/p' $output | cut -d 'B' -f1 | cut -d '<' -f1 | cut -d 'C' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 	}
+getSource
 
 tAdministered="$(getTAdministered)"
 tAt_Least1Dose="$(getTAt_Least1Dose)"
