@@ -1,0 +1,14 @@
+#!/bin/bash
+
+website=https://covidnow.moh.gov.my/
+#curl $website
+output="output.txt"
+dbName="coursework2"
+daily="daily"
+total="total"
+
+function createDB()(
+	$(/opt/lampp/bin/mysql -u root -e "create database dbName; use $dbName")
+	$(/opt/lampp/bin/mysql -u root -e "use $dbName; create table $daily (num int NOT NULL AUTO_INCREMENT, dAdministered int(10), d1stDose int(10), d2ndDose int(10), dBooster int(10), dLocalCases int(10), dimportedCases int(10), dRecovored int(10), dDeath_including_BID int(3), dBrought_in_Dead int(3))")
+	)
+); 
