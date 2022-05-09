@@ -11,10 +11,10 @@ function createDB(){
 	$(/opt/lampp/bin/mysql -u root -e "create database $dbName; use $dbName");
 	## daily is kind of pointless
 	$(/opt/lampp/bin/mysql -u root -e "use $dbName; CREATE TABLE $daily (id int AUTO_INCREMENT, dAdministered int(10), d1stDose int(10), d2ndDose int(10), dBooster int(10), dLocalCases int(10), dimportedCases int(10), dRecovored int(10), dDeath_including_BID int(3), dBrought_in_Dead int(3), PRIMARY KEY (id));")
-	$(/opt/lampp/bin/mysql -u root -e "use $dbName; CREATE TABLE $total (id int AUTO_INCREMENT, tAdministered int (10), tAt_Least1Dose int(10), t2Doses int (10), tBoosters int(10),tLocalCases int(10), tImportedCases int(10), tActiveCases int(10), recovered int, deathIncludingBID int, BroughtInDead int, date DATE,  PRIMARY KEY (id));")
+	$(/opt/lampp/bin/mysql -u root -e "use $dbName; CREATE TABLE $total (id int AUTO_INCREMENT, tAdministered int (10), tAtLeast1Dose int(10), t2Doses int (10), tBoosters int(10),tLocalCases int(10), tImportedCases int(10), tActiveCases int(10), recovered int, deathIncludingBID int, BroughtInDead int, date DATE, PRIMARY KEY (id));")
 	} 
       
-function getSource(){
+function getOutput(){
 	curl -o $output $website
 	}
 
@@ -24,7 +24,7 @@ function getTAdministered(){
 	sed -n '/Total - Administered/,/Daily - 1st Dose/p' $output | sed -n '/,/,/</p' | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 }
 
-function getTAt_Least1Dose(){
+function getTAtLeast1Dose(){
 	sed -n '/Total - At Least 1 Dose/,/Daily - 2nd Dose/p' $output | sed -n '/,/,/</p' | cut -d 'N' -f1 | cut -d '<' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 }
 
@@ -63,10 +63,14 @@ function getDeathIncludingBID(){
 function getBroughtInDead(){
 	sed -n '/Brought in Dead/,/COVID-19 patients/p' $output | cut -d 'B' -f1 | cut -d '<' -f1 | cut -d 'C' -f1 | sed ':a; N; s/[[:space:]]//g; ta' | sed 's/,//g'
 	}
-getSource
+
+function getSourceCode(){
+	curl $website
+	}
+getOutput
 
 tAdministered="$(getTAdministered)"
-tAt_Least1Dose="$(getTAt_Least1Dose)"
+tAtLeast1Dose="$(getTAtLeast1Dose)"
 t2Doses="$(getT2Doses)"
 tBoosters="$(getTBoosters)"
 tLocalCases="$(getTLocalCases)"
@@ -76,9 +80,10 @@ date="$(getDate)"
 recovered="$(getRecovered)"
 deathIncludingBID="$(getDeathIncludingBID)"
 BroughtInDead="$(getBroughtInDead)"
+sourceCode="$(getSourceCode)"
 
 echo "$tAdministered"
-echo "$tAt_Least1Dose"
+echo "$tAtLeast1Dose"
 echo "$t2Doses"
 echo "$tBoosters"
 echo "$tLocalCases"
@@ -89,7 +94,9 @@ echo "$recovered"
 echo "$deathIncludingBID"
 echo "$BroughtInDead"
 
-##Main
-#createDB
-#getSource
-#getData
+
+function insertdata(){
+	$(/opt/lampp/bin/mysql -u root -e "USE $dbName; INSERT INTO $total (tAdministered, tAtLeast1Dose, t2Doses, tBoosters, tLocalCases, tImportedCases, tActiveCases, date, recovered, deathIncludingBID, BroughtInDead) VALUES ('$tAdministered','$tAtLeast1Dose','$t2Doses','$tBoosters','$tLocalCases','$tImportedCases','$tActiveCases','$date','$recovered','$deathIncludingBID','$BroughtInDead' )")
+	}
+
+insertdata
